@@ -5,6 +5,7 @@
 package com.rocketseat.passIn.repositories;
 
 import com.rocketseat.passIn.domain.checkin.CheckIn;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author lara
  */
 public interface CheckinRepository extends JpaRepository<CheckIn, Integer>{
-    
+    Optional<CheckIn> findByAttendeeId(String attendeeID);
 }

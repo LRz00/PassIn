@@ -6,10 +6,10 @@ package com.rocketseat.passIn.services;
 
 import com.rocketseat.passIn.domain.attendee.Attendee;
 import com.rocketseat.passIn.domain.event.Event;
+import com.rocketseat.passIn.domain.event.exceptions.EventNotFoundException;
 import com.rocketseat.passIn.dto.event.EventIdDTO;
 import com.rocketseat.passIn.dto.event.EventRequestDTO;
 import com.rocketseat.passIn.dto.event.EventResponseDTO;
-import com.rocketseat.passIn.repositories.AttendeeRepository;
 import com.rocketseat.passIn.repositories.EventRepository;
 import java.text.Normalizer;
 import org.springframework.stereotype.Service;
@@ -26,12 +26,12 @@ import java.util.List;
 public class EventService {
 
     public final EventRepository eventRepoitory;
-    public final AttendeeRepository atendeeRepository;
+    public final AttendeeService attendeeService;
 
     //Finds the details of an event by its ID
     public EventResponseDTO getEventDetail(String eventId) {
-        Event event = this.eventRepoitory.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
-        List<Attendee> attendeeList = this.atendeeRepository.findByEventId(eventId);
+        Event event = this.eventRepoitory.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found"));
+        List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
         return new EventResponseDTO(event, attendeeList.size());
     }
 
