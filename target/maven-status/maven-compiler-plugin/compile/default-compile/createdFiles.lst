@@ -1,1 +1,14 @@
+com/rocketseat/passIn/dto/event/EventIdDTO.class
+com/rocketseat/passIn/dto/event/EventDetailDTO.class
+com/rocketseat/passIn/dto/event/EventRequestDTO.class
+com/rocketseat/passIn/controllers/AttendeeController.class
+com/rocketseat/passIn/dto/event/EventResponseDTO.class
 com/rocketseat/passIn/PassInApplication.class
+com/rocketseat/passIn/repositories/CheckinRepository.class
+com/rocketseat/passIn/domain/attendee/Attendee.class
+com/rocketseat/passIn/repositories/AttendeeRepository.class
+com/rocketseat/passIn/controllers/EventController.class
+com/rocketseat/passIn/repositories/EventRepository.class
+com/rocketseat/passIn/domain/event/Event.class
+com/rocketseat/passIn/domain/checkin/CheckIn.class
+com/rocketseat/passIn/services/EventService.class

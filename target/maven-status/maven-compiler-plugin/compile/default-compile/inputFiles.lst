@@ -1,1 +1,14 @@
-/home/lara/Documentos/passIn/src/main/java/com/rocketseat/passIn/PassInApplication.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/repositories/EventRepository.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/dto/event/EventIdDTO.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/repositories/CheckinRepository.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/dto/event/EventResponseDTO.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/PassInApplication.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/dto/event/EventDetailDTO.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/controllers/EventController.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/dto/event/EventRequestDTO.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/repositories/AttendeeRepository.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/domain/event/Event.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/domain/attendee/Attendee.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/controllers/AttendeeController.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/domain/checkin/CheckIn.java
+/home/lara/Documentos/passIn/PassIn/src/main/java/com/rocketseat/passIn/services/EventService.java
