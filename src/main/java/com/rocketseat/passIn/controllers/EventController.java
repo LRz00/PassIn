@@ -4,6 +4,8 @@
  */
 package com.rocketseat.passIn.controllers;
 
+import com.rocketseat.passIn.dto.attendee.AttendeeIdDTO;
+import com.rocketseat.passIn.dto.attendee.AttendeeRequestDTO;
 import com.rocketseat.passIn.dto.attendee.AttendeesListResponseDTO;
 import com.rocketseat.passIn.dto.event.EventIdDTO;
 import com.rocketseat.passIn.dto.event.EventRequestDTO;
@@ -54,5 +56,14 @@ public class EventController {
         
         return ResponseEntity.ok(attendeeListResponse);
     } 
+    
+    
+     @PostMapping("/{eventId}/attendees")
+    public ResponseEntity<AttendeeIdDTO> registerParticipant(@PathVariable String eventId,@RequestBody AttendeeRequestDTO body, UriComponentsBuilder uriComponentsBuilder){
+        AttendeeIdDTO attendeeIdDTO = this.eventService.registerAttendeeOnEvent(eventId, body);
+        
+        var uri = uriComponentsBuilder.path("/attendees/{attendeeId}/badge").buildAndExpand(attendeeIdDTO.AttendeeId()).toUri();
+        return ResponseEntity.created(uri).body(attendeeIdDTO);
+    }
     
 }
