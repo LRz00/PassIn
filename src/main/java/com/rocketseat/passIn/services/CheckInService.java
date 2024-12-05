@@ -7,8 +7,10 @@ package com.rocketseat.passIn.services;
 import com.rocketseat.passIn.domain.attendee.Attendee;
 import com.rocketseat.passIn.domain.checkin.CheckIn;
 import com.rocketseat.passIn.domain.checkin.exceptions.CheckInAlreadyExistsException;
+import com.rocketseat.passIn.domain.event.exceptions.EventNotFoundException;
 import com.rocketseat.passIn.repositories.CheckInRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,5 +42,9 @@ public class CheckInService {
     
     public Optional<CheckIn> getCheckIn(String attendeeId){
         return this.checkinRepository.findByAttendeeId(attendeeId);
+    }
+    
+    public List<CheckIn> getCheckInsByEvent(String eventId) {
+        return checkinRepository.findByAttendeeEventId(eventId);
     }
 }

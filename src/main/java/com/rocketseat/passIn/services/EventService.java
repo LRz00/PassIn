@@ -13,6 +13,7 @@ import com.rocketseat.passIn.dto.attendee.AttendeeRequestDTO;
 import com.rocketseat.passIn.dto.event.EventIdDTO;
 import com.rocketseat.passIn.dto.event.EventRequestDTO;
 import com.rocketseat.passIn.dto.event.EventResponseDTO;
+import com.rocketseat.passIn.dto.event.EventUpdateCapacityDTO;
 import com.rocketseat.passIn.repositories.EventRepository;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
@@ -82,6 +83,12 @@ public class EventService {
         
         return new AttendeeIdDTO(newAttendee.getId());
     }
+    
+    public void updateEventCapacity(EventUpdateCapacityDTO dto, String eventId) {
+    Event event = this.getEventById(eventId);
+    event.setMaximumAttendees(dto.newCapacity());
+    eventRepoitory.save(event);
+}
     
     
     private Event getEventById(String eventId){

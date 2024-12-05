@@ -4,14 +4,17 @@
  */
 package com.rocketseat.passIn.controllers;
 
+import com.rocketseat.passIn.dto.attendee.AtendeeEmailDTO;
 import com.rocketseat.passIn.dto.attendee.AttendeeBadgeResponseDTO;
 import com.rocketseat.passIn.services.AttendeeService;
 import com.rocketseat.passIn.services.CheckInService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -40,6 +43,12 @@ public class AttendeeController {
         var uri = uriComponentsBuilder.path("/attendees/{attendeeId}/badge").buildAndExpand(attendeeId).toUri();
         
         return ResponseEntity.created(uri).build();
+    }
+    
+    @DeleteMapping("/delete")
+    public ResponseEntity unregisterAtendee(@RequestBody AtendeeEmailDTO dto){
+        this.attendeeService.unregisterAttendee(dto.email());
+        return ResponseEntity.noContent().build();
     }
     
     
