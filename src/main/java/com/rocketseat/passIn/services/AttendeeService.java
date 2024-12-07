@@ -28,17 +28,18 @@ import com.rocketseat.passIn.repositories.CheckInRepository;
 @Service
 @RequiredArgsConstructor
 public class AttendeeService {
+
     private final AttendeeRepository attendeeRepository;
     private final CheckInService checkInService;
-    
+
     //returns a list with all attendees from an event
-    public List<Attendee> getAllAttendeesFromEvent(String eventId){
+    public List<Attendee> getAllAttendeesFromEvent(String eventId) {
         List<Attendee> attendeeList = this.attendeeRepository.findByEventId(eventId);
-        
+
         return attendeeList;
     }
-     
- public AttendeesListResponseDTO getEventsAttendee(String eventId){
+
+    public AttendeesListResponseDTO getEventsAttendee(String eventId) {
         List<Attendee> attendeeList = this.getAllAttendeesFromEvent(eventId);
 
         List<AttendeeDetails> attendeeDetailsList = attendeeList.stream().map(attendee -> {
@@ -50,43 +51,44 @@ public class AttendeeService {
         return new AttendeesListResponseDTO(attendeeDetailsList);
     }
 
- //registers a new attendee
- public Attendee registerAttendee(Attendee newAttendee){
-     this.attendeeRepository.save(newAttendee);
-     return newAttendee;
- }
- 
- //checks if an attendee is registered to an event
- public void verifyAttendeeSubscription(String email, String eventId){
-    
-    Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(eventId, email);
-    if(isAttendeeRegistered.isPresent()) throw new AttendeeAlreadyExistsException("Attendee is already registereed");
-    
- }
- 
- //returns the badge with the relevant informations
- public AttendeeBadgeResponseDTO getAttendeeBadge(String attendeeId, UriComponentsBuilder uriComponentsBuilder){
-     Attendee attendee = this.getAttendee(attendeeId);
-     
-     var uri = uriComponentsBuilder.path("/attendees/{attendeeId}/check-in").buildAndExpand(attendeeId).toUri().toString();
-     
-     AttendeeBadgeDTO badgeDto = new AttendeeBadgeDTO(attendee.getName(), attendee.getEmail(), uri, attendee.getEvent().getId());
-     return new AttendeeBadgeResponseDTO(badgeDto);
- }
- 
- 
- public void checkInAttendee(String attendeeId){
-      Attendee attendee = this.getAttendee(attendeeId);
-      this.checkInService.registerCheckIn(attendee);
- }
- 
- public void unregisterAttendee(String email) {
-     
-    Attendee attendee = this.attendeeRepository.findByEmail(email).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found"));
-    attendeeRepository.delete(attendee);
-}
-     
- private Attendee getAttendee(String attendeeId){
-     return this.attendeeRepository.findById(attendeeId).orElseThrow(()-> new AttendeeNotFoundException("Attendee not found with id"));
- }
+    //registers a new attendee
+    public Attendee registerAttendee(Attendee newAttendee) {
+        this.attendeeRepository.save(newAttendee);
+        return newAttendee;
+    }
+
+    //checks if an attendee is registered to an event
+    public void verifyAttendeeSubscription(String email, String eventId) {
+
+        Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(eventId, email);
+        if (isAttendeeRegistered.isPresent()) {
+            throw new AttendeeAlreadyExistsException("Attendee is already registereed");
+        }
+
+    }
+
+    //returns the badge with the relevant informations
+    public AttendeeBadgeResponseDTO getAttendeeBadge(String attendeeId, UriComponentsBuilder uriComponentsBuilder) {
+        Attendee attendee = this.getAttendee(attendeeId);
+
+        var uri = uriComponentsBuilder.path("/attendees/{attendeeId}/check-in").buildAndExpand(attendeeId).toUri().toString();
+
+        AttendeeBadgeDTO badgeDto = new AttendeeBadgeDTO(attendee.getName(), attendee.getEmail(), uri, attendee.getEvent().getId());
+        return new AttendeeBadgeResponseDTO(badgeDto);
+    }
+
+    public void checkInAttendee(String attendeeId) {
+        Attendee attendee = this.getAttendee(attendeeId);
+        this.checkInService.registerCheckIn(attendee);
+    }
+
+    public void unregisterAttendee(String email) {
+
+        Attendee attendee = this.attendeeRepository.findByEmail(email).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found"));
+        attendeeRepository.delete(attendee);
+    }
+
+    private Attendee getAttendee(String attendeeId) {
+        return this.attendeeRepository.findById(attendeeId).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with id"));
+    }
 }
