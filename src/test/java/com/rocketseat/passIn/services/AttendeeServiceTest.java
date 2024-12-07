@@ -5,7 +5,10 @@
 package com.rocketseat.passIn.services;
 
 import com.rocketseat.passIn.domain.attendee.Attendee;
+import com.rocketseat.passIn.domain.attendee.exceptions.AttendeeAlreadyExistsException;
+import com.rocketseat.passIn.domain.attendee.exceptions.AttendeeNotFoundException;
 import com.rocketseat.passIn.domain.checkin.CheckIn;
+import com.rocketseat.passIn.domain.event.Event;
 import com.rocketseat.passIn.dto.attendee.AttendeeBadgeResponseDTO;
 import com.rocketseat.passIn.dto.attendee.AttendeesListResponseDTO;
 import com.rocketseat.passIn.repositories.AttendeeRepository;
@@ -89,7 +92,6 @@ public class AttendeeServiceTest {
         Mockito.verify(attendeeRepository, Mockito.times(1)).findByEventId(invalidEventId);
     }
 
-
     /**
      * Test of registerAttendee method, of class AttendeeService.
      */
@@ -98,72 +100,165 @@ public class AttendeeServiceTest {
         Attendee attendee = new Attendee("1", "WS", "WS@wmail.com", null, LocalDateTime.now());
 
         Mockito.when(attendeeRepository.save(Mockito.any(Attendee.class))).thenReturn(attendee);
-        
+
         Attendee result = attendeeService.registerAttendee(attendee);
-        
+
         Assertions.assertNotNull(result);
         Assertions.assertEquals(attendee.getId(), result.getId());
         Assertions.assertEquals(attendee.getName(), result.getName());
-        
-        Mockito.verify(attendeeRepository, Mockito.times(1)).save(attendee);        
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).save(attendee);
     }
-    
-    
 
     /**
      * Test of verifyAttendeeSubscription method, of class AttendeeService.
      */
     @Test
-    public void testVerifyAttendeeSubscription() {
-        System.out.println("verifyAttendeeSubscription");
-        String email = "";
-        String eventId = "";
-        AttendeeService instance = null;
-        instance.verifyAttendeeSubscription(email, eventId);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testVerifyAttendeeSubscription_NotSubscribed() {
+        String email = "ws@email.com";
+        String eventId = "eventId";
+
+        Mockito.when(attendeeRepository.findByEventIdAndEmail(eventId, email))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertDoesNotThrow(() -> attendeeService.verifyAttendeeSubscription(email, eventId));
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).findByEventIdAndEmail(eventId, email);
+    }
+
+    @Test
+    public void testVerifyAttendeeSubscription_IsSubscribed() {
+        String email = "ws@email.com";
+        String eventId = "eventId";
+
+        Attendee attendee = new Attendee("1", "WS", email, null, LocalDateTime.now());
+
+        Mockito.when(attendeeRepository.findByEventIdAndEmail(eventId, email))
+                .thenReturn(Optional.of(attendee));
+
+        // Act & Assert
+        AttendeeAlreadyExistsException exception = Assertions.assertThrows(
+                AttendeeAlreadyExistsException.class,
+                () -> attendeeService.verifyAttendeeSubscription(email, eventId)
+        );
+
+        Assertions.assertEquals("Attendee is already registereed", exception.getMessage());
+        Mockito.verify(attendeeRepository, Mockito.times(1)).findByEventIdAndEmail(eventId, email);
     }
 
     /**
      * Test of getAttendeeBadge method, of class AttendeeService.
      */
     @Test
-    public void testGetAttendeeBadge() {
-        System.out.println("getAttendeeBadge");
-        String attendeeId = "";
-        UriComponentsBuilder uriComponentsBuilder = null;
-        AttendeeService instance = null;
-        AttendeeBadgeResponseDTO expResult = null;
-        AttendeeBadgeResponseDTO result = instance.getAttendeeBadge(attendeeId, uriComponentsBuilder);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetAttendeeBadge_Sucess() {
+        String attendeeId = "1";
+        String eventId = "eventId";
+        String attendeeName = "WS";
+        String attendeeEmail = "ws@email.com";
+        String expectedUri = "/attendees/" + attendeeId + "/check-in";
+
+        Event event = new Event();
+        event.setId(eventId);
+
+        Attendee attendee = new Attendee(attendeeId, attendeeName, attendeeEmail, event, LocalDateTime.now());
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+
+        Mockito.when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.of(attendee));
+
+        AttendeeBadgeResponseDTO responseDTO = attendeeService.getAttendeeBadge(attendeeId, uriBuilder);
+
+        Assertions.assertNotNull(responseDTO);
+        Assertions.assertEquals(attendeeName, responseDTO.badge().name());
+        Assertions.assertEquals(attendeeEmail, responseDTO.badge().email());
+        Assertions.assertEquals(expectedUri, responseDTO.badge().checkInUrl());
+        Assertions.assertEquals(eventId, responseDTO.badge().eventId());
+    }
+
+    @Test
+    public void testGetAttendeeBadge_AttendeeDoesNotExist() {
+
+        String attendeeId = "idInvalida";
+
+        Mockito.when(attendeeRepository.findById(attendeeId)).thenThrow(new AttendeeNotFoundException("Attendee not found with id"));
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+
+        AttendeeNotFoundException exception = Assertions.assertThrows(
+                AttendeeNotFoundException.class,
+                () -> attendeeService.getAttendeeBadge(attendeeId, uriBuilder)
+        );
+
+        Assertions.assertEquals("Attendee not found with id", exception.getMessage());
     }
 
     /**
      * Test of checkInAttendee method, of class AttendeeService.
      */
     @Test
-    public void testCheckInAttendee() {
-        System.out.println("checkInAttendee");
-        String attendeeId = "";
-        AttendeeService instance = null;
-        instance.checkInAttendee(attendeeId);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testCheckInAttendee_Success() {
+        String attendeeId = "1";
+        String attendeeName = "WS";
+        String attendeeEmail = "ws@email.com";
+        Event event = new Event();
+        event.setId("eventId");
+
+        Attendee attendee = new Attendee(attendeeId, attendeeName, attendeeEmail, event, LocalDateTime.now());
+
+        Mockito.when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.of(attendee));
+
+        attendeeService.checkInAttendee(attendeeId);
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).findById(attendeeId);
+
+        Mockito.verify(checkInService, Mockito.times(1)).registerCheckIn(attendee);
+    }
+
+    @Test
+    public void testCheckInAttendee_NotFound() {
+        String attendeeId = "nonExistentId";
+
+        Mockito.when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(AttendeeNotFoundException.class, () -> {
+            attendeeService.checkInAttendee(attendeeId);
+        });
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).findById(attendeeId);
     }
 
     /**
      * Test of unregisterAttendee method, of class AttendeeService.
      */
     @Test
-    public void testUnregisterAttendee() {
-        System.out.println("unregisterAttendee");
-        String email = "";
-        AttendeeService instance = null;
-        instance.unregisterAttendee(email);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testUnregisterAttendee_Sucess() {
+        String email = "ws@email.com";
+        String attendeeId = "1";
+        String attendeeName = "WS";
+        Event event = new Event();
+        event.setId("eventId");
+
+        Attendee attendee = new Attendee(attendeeId, attendeeName, email, event, LocalDateTime.now());
+
+        Mockito.when(attendeeRepository.findByEmail(email)).thenReturn(Optional.of(attendee));
+
+        attendeeService.unregisterAttendee(email);
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).findByEmail(email);
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).delete(attendee);
+    }
+
+    @Test
+    public void testUnregisterAttendee_AttendeeNotFound() {
+        String email = "naotem@email.com";
+        Mockito.when(attendeeRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(AttendeeNotFoundException.class, () -> {
+            attendeeService.unregisterAttendee(email);
+        });
+
+        Mockito.verify(attendeeRepository, Mockito.times(1)).findByEmail(email);
     }
 
 }

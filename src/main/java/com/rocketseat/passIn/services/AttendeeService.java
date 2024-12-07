@@ -88,7 +88,7 @@ public class AttendeeService {
         attendeeRepository.delete(attendee);
     }
 
-    private Attendee getAttendee(String attendeeId) {
+    public Attendee getAttendee(String attendeeId) {
         return this.attendeeRepository.findById(attendeeId).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with id"));
     }
 }
