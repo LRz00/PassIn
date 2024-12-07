@@ -29,7 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  *
- * @author lara
+ * @author André
  */
 
 @RestController

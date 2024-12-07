@@ -16,14 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 /**
  *
- * @author lara
+ * @author wesley
  */
 @Service
 @RequiredArgsConstructor
 public class CheckInService {
     private final CheckInRepository checkinRepository;
     
-    //registers the check in of a new attendee
+    //registra o check-in de um novo participante
     public void registerCheckIn(Attendee attendee){
         this.verifyCheckInExists(attendee.getId());
         
@@ -34,16 +34,18 @@ public class CheckInService {
     }
     
     
-    //checks if theres already an attende with that id checked in
+    //verifica se já há um participante com esse ID registrado
     private void verifyCheckInExists(String attendeeId){
         Optional<CheckIn> isCheckedIn = this.getCheckIn(attendeeId);
         if(isCheckedIn.isPresent()) throw new CheckInAlreadyExistsException("Attendee already checked in");
     }
-    
+
+    //pega o checkIn pelo id
     public Optional<CheckIn> getCheckIn(String attendeeId){
         return this.checkinRepository.findByAttendeeId(attendeeId);
     }
-    
+
+    //pega os checkIns vinculados a eventos
     public List<CheckIn> getCheckInsByEvent(String eventId) {
         return checkinRepository.findByAttendeeEventId(eventId);
     }
