@@ -5,6 +5,9 @@
 package com.rocketseat.passIn.repositories;
 
 import com.rocketseat.passIn.domain.event.Event;
+
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,5 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author lara
  */
 public interface EventRepository extends JpaRepository<Event, String>{
-    
+    Optional<Event> findByTitle(String title); 
 }
