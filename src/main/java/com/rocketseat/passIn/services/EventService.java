@@ -57,12 +57,16 @@ public class EventService {
     
     //creates an event slug to be used when creating a new event
     
-    private String createSlug(String text){
-        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
-        
-        return normalized.replaceAll("[\\p{InCOMBINING_DIACRITICAL_MARKS}]", "")
-                .replaceAll("^[\\w\\s]", "").replaceAll("\\s+", "-").toLowerCase();
-    }
+    private String createSlug(String text) {
+    String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+    
+    return normalized
+            .replaceAll("[\\p{InCOMBINING_DIACRITICAL_MARKS}]", "") // Remove acentos
+            .replaceAll("[^\\w\\s-]", "") // Remove caracteres não alfanuméricos (exceto espaços e hífens)
+            .replaceAll("\\s+", "-") // Substitui espaços por hífens
+            .toLowerCase(); // Converte para minúsculas
+}
+
     
     //registers attendee on a specific event, making sur ethe event isnt full and exists
     public AttendeeIdDTO registerAttendeeOnEvent(String eventId, AttendeeRequestDTO attendeeRequestDTO){

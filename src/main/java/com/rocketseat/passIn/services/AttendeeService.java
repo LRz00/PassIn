@@ -58,13 +58,14 @@ public class AttendeeService {
     }
 
     //checks if an attendee is registered to an event
-    public void verifyAttendeeSubscription(String email, String eventId) {
+    public boolean verifyAttendeeSubscription(String email, String eventId) {
 
         Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(eventId, email);
         if (isAttendeeRegistered.isPresent()) {
             throw new AttendeeAlreadyExistsException("Attendee is already registereed");
         }
 
+        return false;
     }
 
     //returns the badge with the relevant informations
